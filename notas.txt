@@ -1,0 +1,6 @@
+mvn clean package \
+ -Dquarkus.container-image.push=true \
+ -Dquarkus.container-image.registry=registry.hub.docker.com \
+ -Dquarkus.jib.base-registry-username=eumagnun \
+ -Dquarkus.jib.base-registry-password=<senha>
+
