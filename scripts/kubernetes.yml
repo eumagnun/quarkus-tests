@@ -1,0 +1,110 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    app-type: quarkus-tests
+    app.quarkus.io/commit-id: 8165ba0af468a51bc1cd1c93343f8aab74dae5b1
+    app.quarkus.io/vcs-url: https://github.com/eumagnun/quarkus-tests.git
+    app.quarkus.io/build-timestamp: 2021-03-29 - 00:02:59 +0000
+  labels:
+    app-type: quarkus-tests
+    app.kubernetes.io/name: quarkus-tests
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  name: quarkus-tests
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app-type: quarkus-tests
+    app.quarkus.io/commit-id: 8165ba0af468a51bc1cd1c93343f8aab74dae5b1
+    app.quarkus.io/vcs-url: https://github.com/eumagnun/quarkus-tests.git
+    app.quarkus.io/build-timestamp: 2021-03-29 - 00:02:59 +0000
+  labels:
+    app.kubernetes.io/name: quarkus-tests
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    app-type: quarkus-tests
+  name: quarkus-tests
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: quarkus-tests
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  type: ClusterIP
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: quarkus-tests-view
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+  name: view
+subjects:
+- kind: ServiceAccount
+  name: quarkus-tests
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app-type: quarkus-tests
+    app.quarkus.io/commit-id: 8165ba0af468a51bc1cd1c93343f8aab74dae5b1
+    app.quarkus.io/vcs-url: https://github.com/eumagnun/quarkus-tests.git
+    app.quarkus.io/build-timestamp: 2021-03-29 - 00:02:59 +0000
+  labels:
+    app-type: quarkus-tests
+    app.kubernetes.io/name: quarkus-tests
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  name: quarkus-tests
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: quarkus-tests
+      app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  template:
+    metadata:
+      annotations:
+        app-type: quarkus-tests
+        app.quarkus.io/commit-id: 8165ba0af468a51bc1cd1c93343f8aab74dae5b1
+        app.quarkus.io/vcs-url: https://github.com/eumagnun/quarkus-tests.git
+        app.quarkus.io/build-timestamp: 2021-03-29 - 00:02:59 +0000
+      labels:
+        app-type: quarkus-tests
+        app.kubernetes.io/name: quarkus-tests
+        app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_DB
+              name: postgres-config
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_USER
+              name: postgres-config
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: POSTGRES_PASSWORD
+              name: postgres-secret
+        image: eumagnun/quarkus-tests:1.0.0
+        imagePullPolicy: Always
+        name: quarkus-tests
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+      serviceAccount: quarkus-tests

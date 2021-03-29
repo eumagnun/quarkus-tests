@@ -11,14 +11,20 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @Path("/api")
 public class GreetingResource {
 
-   @ConfigProperty(name = "greeting.text") 
-   String text;
+   @ConfigProperty(name = "quarkus.datasource.username")
+   String username;
+
+    @ConfigProperty(name = "quarkus.datasource.password")
+    String password;
+
+    @ConfigProperty(name = "quarkus.datasource.jdbc.url")
+    String url;
 
     @GET
     @Path("/test2")
     @Produces(MediaType.TEXT_PLAIN)
     public String hello2() {
-        return text;
+        return username + " - " + password+ " - " +url;
     }
 
     @GET
